@@ -1,12 +1,6 @@
 pipeline {
-    agent any
-
-    stages {
-        
-        stage ('Secret Retrieval') {
-        
-            steps {
-                    def secrets = [
+    agent {
+                            def secrets = [
                            [path: 'secret/testing', engineVersion: 2, secretValues: [
                               [envVar: 'testing', vaultKey: 'value_one'],
                               [envVar: 'testing_again', vaultKey: 'value_two']]],
@@ -17,7 +11,13 @@ pipeline {
                      def configuration = [vaultUrl: 'http://localhost:8200',
                          vaultCredentialId: 'my-vault-cred-id',
                          engineVersion: 1]
-                
+    }
+    stages {
+        
+        stage ('Secret Retrieval') {
+        
+            steps {
+              
             withVault([configuration: configuration, vaultSecrets: secrets]) {
                 sh 'echo $testing'
                 sh 'echo $testing_again'
